@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand-lg navbar-dark  bg-dark">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'main:index' %}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            {% if nav.status == "admin" %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'main:admin-dashboard' %}">Users</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Manage Account
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'main:register' 'admin'%}">Register Admin</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'main:register' 'counter'%}">Register counter</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'main:register' 'postman' %}">Register Post-man</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'main:register' 'costumer'%}">Register Costumer</a>
+                    <div class="dropdown-divider"></div>
+                </div>
+            </li>
+            {% elif nav.status == "costumer" %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Sent Post</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="#">Notification</a>
+            </li>
+            {% endif%}
+
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            {% if nav.status %}
+                <a class="btn btn-outline-warning my-2 my-sm- " href="{% url 'main:log-out' %}" >Logout({{ nav.name }})</a>
+            {% else %}
+                <a class="btn btn-outline-success my-2 my-sm-0 ml-3" href="{% url 'main:login' %}">Login</a>
+                <a class="btn btn-outline-success my-2 my-sm-0 ml-3" title="for costumer registration only." href="{% url 'main:register' 'costumer' %}">Register</a>
+            {% endif %}
+        </form>
+    </div>
+</nav>

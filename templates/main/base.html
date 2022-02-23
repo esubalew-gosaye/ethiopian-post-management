@@ -1,0 +1,103 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ethiopian Postal Service | {% block title %} {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css'  %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css'  %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/all.css'  %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fontawesome.min.css'  %}">
+    <script type="text/javascript" src="{% static 'js/jquery.js'  %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js'  %}"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Start of top header image -->
+    <section class="top-header-img">
+        <img src="{% static 'image/top-header.gif'%}">
+    </section>
+
+    <!-- End of top header image -->
+    <!-- Start of Navigation bar -->
+    {% block navbar %}
+    {% endblock %}
+    <!-- End of Navigation bar -->
+
+    <section class="middle mt-5">
+        {% block middle %}
+        {% endblock %}
+    </section>
+    <section class="footer-2">
+        <div class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-sm-4 col-xs-12">
+                        <div class="single_footer">
+                            <h4>Address</h4>
+                            <address>
+                                <ul>
+                                    <li><a href="#">Ethiopian Postal Service</a></li>
+                                    <li><a href="#">Addis Ababa</a></li>
+                                    <li><a href="#">Ethiopian</a></li>
+                                    <li><a href="#"><i class="fa fa-phone pright-10"></i> +251-923-750695</a></li>
+                                    <li><a href="#"><i class="fa fa-envelope pright-10"></i> Ethiopostalsystem.com</a>
+                                    </li>
+                                </ul>
+                            </address>
+                        </div>
+                    </div><!--- END COL -->
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <div class="single_footer single_footer_address">
+                            <h4>Map Location</h4>
+                            <div class="mapouter">
+                                <div class="gmap_canvas">
+                                    <iframe width="420" height="213" id="gmap_canvas"
+                                            src="https://maps.google.com/maps?q=2Q39+C5P,%20Addis%20Ababa&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                                            frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                                    <a href="https://putlocker-is.org"></a><br>
+                                    <style>.mapouter {
+                                        position: relative;
+                                        text-align: right;
+                                        height: 213px;
+                                        width: 345px;
+                                    }</style>
+                                    <a href="https://www.embedgooglemap.net">how to add google maps to a website</a>
+                                    <style>.gmap_canvas {
+                                        overflow: hidden;
+                                        background: none !important;
+                                        height: 213px;
+                                        width: 345px;
+                                    }</style>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--- END COL -->
+                    <div class="col-md-4 col-sm-4 col-xs-12 mr-sm-2">
+                        <div class="social_profile">
+                            <ul>
+                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>
+                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><!--- END COL -->
+            </div><!--- END ROW -->
+        </div><!--- END CONTAINER -->
+    </section>
+    <section class="footer-1">
+        <div class="card">
+            <div class="card-body bg-success">
+                <p class="text-center text-dark mt-3">Copyright &copy; 2014 Online Ethiopian Postal System. </br> All
+                    rights
+                    reserved.</p>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
