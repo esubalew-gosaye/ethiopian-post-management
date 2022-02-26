@@ -9,7 +9,7 @@ from django.contrib import messages
 def logout(request):
     request.session.pop("user-role", 0)
     request.session.pop("email", 0)
-    return redirect('main:login')
+    return redirect('account:login')
 
 
 def index(request):
@@ -35,11 +35,11 @@ def register(request, role="customer"):
                 gs.save()
                 if role == "costumer" and request.session.get("admin") is None:
                     messages.info(request, "Please login to proceed.")
-                    return redirect("main:login")
-                return redirect("main:index")
+                    return redirect("account:login")
+                return redirect("account:index")
             else:
                 messages.warning(request, "User Email is already taken.")
-                return redirect(reverse('main:register', args=[role]))
+                return redirect(reverse('account:register', args=[role]))
     rf = RegisterForm()
     return render(request, 'main/register.html', {"form": rf, "nav": navbar_tool(request)})
 
@@ -62,7 +62,7 @@ def login(request):
             request.session["user-role"] = flag
             request.session["email"] = user.email
             if flag == "admin":
-                return redirect('main:admin-dashboard')
+                return redirect('account:admin-dashboard')
             return render(request, 'main/index.html', {"nav": navbar_tool(request)})
         else:
             messages.warning(request, "User doesn't exist!, with this credentials.")
