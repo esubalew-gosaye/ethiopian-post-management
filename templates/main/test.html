@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>
+        test html
+    </h1>
+    {% for c in carousels %}
+        {% if forloop.first %}
+            Active
+        {% endif %}
+
+        <ul>{{ c.id }} {{ forloop.counter0 }}</ul>
+    {% endfor %}
+</body>
+</html>

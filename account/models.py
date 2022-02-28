@@ -5,7 +5,7 @@ from django.db import models
 
 class User(models.Model):
     GENDER = (
-        ('F', "FEMALE"),
+        ('F', "Female"),
         ('M', 'Male'),
         ('O', 'Other')
     )
@@ -21,6 +21,9 @@ class User(models.Model):
     is_admin = models.BooleanField(blank=True, default=False)
     is_costumer = models.BooleanField(blank=True, default=False)
     is_postman = models.BooleanField(blank=True, default=False)
+
+    def get_absolute_url(self):
+        return f"/me/{self.id}/"
 
     def __str__(self):
         return self.first_name+" "+self.middle_name

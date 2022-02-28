@@ -5,7 +5,10 @@
 {% endblock %}
 
 {% block navbar %}
-    {% include 'main/navbar.html' %}
+    {% block comment %}
+
+    {% endblock %}
+
 {% endblock %}
 
 {% block middle %}
@@ -21,7 +24,7 @@
         </div>
         {% csrf_token %}
         {% for foo in form %}
-            {{ foo  }}
+            {{ foo.label }}{{ foo.id_for_label  }}{{ foo  }}
         {% endfor %}
 
         <button class="btn btn-lg btn-primary btn-block ml-3" type="submit">Sign-Up</button>

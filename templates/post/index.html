@@ -1,0 +1,85 @@
+{% extends 'post/index_base.html' %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block breadcrumb %}
+    index
+{% endblock %}
+
+{% block middle %}
+    {% load static %}
+    <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">From our memorial gallery</h5>
+                        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                {% for carousel in carousels %}
+                                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="{{ forloop.counter0 }}"
+                                        class="{% if forloop.first %} active {% endif %}" aria-current="true" aria-label="{{ forloop.counter }}"></button>
+                                {% endfor %}
+                            </div>
+
+                            <div class="carousel-inner">
+                                {% for carousel in carousels %}
+                                <div class="carousel-item {% if forloop.first %} active {% endif %} ">
+                                    <img src="{{ carousel.photo.url }}" class="d-block w-100" alt="Image doesn't exist.">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <h5>{{ carousel.title }}</h5>
+                                        <p>{{ carousel.caption }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+
+                        </div><!-- End Slides with captions -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Wel come Guest</h5>
+                        <p>
+                            Ethiopian Online Postal System is dedicated to serve its people to connect around the word
+                            throug postal comminication method.
+                        </p>
+                        <h5 class="card-title">To send Post You have To follow some step.</h5>
+                        <ol class="list-group list-group-numbered pl-4">
+                            <li class="list-group-item">Register</li>
+                            <li class="list-group-item">something</li>
+                            <li class="list-group-item">something</li>
+                            <li class="list-group-item">something</li>
+                            <li class="list-group-item">something</li>
+                        </ol>
+                        <p class="mt-4">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
