@@ -1,19 +1,78 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+    <style>
+        .our-custom-model {
+            position: fixed;
+            z-index: 1000;
+            width: 40%;
+            top: 20%;
+            left: 30%;
+            transition:1s ease-in-out;
+        }
+    </style>
 </head>
 <body>
-    <h1>
-        test html
-    </h1>
-    {% for c in carousels %}
-        {% if forloop.first %}
-            Active
-        {% endif %}
 
-        <ul>{{ c.id }} {{ forloop.counter0 }}</ul>
-    {% endfor %}
+{% for foo in post %}
+    <table>
+        <tr><td>{{ foo }}</td><td>{{ foo.date_send }}</td></tr>
+    </table>
+{% endfor %}
+
+<div class="our-custom-model card m-auto d-none">
+    <div class="modal-header">
+        <h5 class="modal-title font-monospace ">Are you sure you want to delete the selected user?</h5>
+    </div>
+    <div class="modal-footer">
+        <a href="#" id="iamsure" class="btn btn-danger">Yes, I’m sure</a>
+        <a href="#" id="notsure" class="btn btn-secondary">No, take me back</a>
+    </div>
+</div>
+<form action="" method="post" class="w-25 d-inline-flex">
+    {% csrf_token %}
+    <input type="date" class="form-control" name="date" required>
+    <input class="btn btn-sm btn-success" type="submit" name="selected_date" value="Generate Report">
+</form>
+<div>
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquam aliquid amet debitis, doloribus ducimus ea earum eligendi error esse, nam nihil nostrum officia qui, ratione recusandae sit unde veniam.
+</div>
+<button onclick="dume()" id="delete" value="7">click</button>
+<script>
+    function dume(){
+        let ds = document.getElementsByClassName('our-custom-model')[0]
+        let btn = document.getElementById('delete')
+        let a_sure = document.getElementById('iamsure')
+        let a_not_sure = document.getElementById('notsure')
+
+        a_sure.setAttribute('href', 'account:delete-user/'+btn.value+'/')
+        a_not_sure.setAttribute('href', '/admin/')
+
+        ds.classList.toggle('d-none')
+        return btn.value
+    }
+</script>
+
+{#        -----------------------------               #}
+<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
+<script src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
 </body>
 </html>

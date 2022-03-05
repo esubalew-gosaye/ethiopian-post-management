@@ -10,21 +10,21 @@
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="user-page.html">
+                <a class="nav-link collapsed" href="/{% if role == 'costumer' %}user{% else %}{{ role }}{% endif %}/">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="{% url 'post:user-dashboard' %}?pages=write_feedback">
                     <i class="bi bi-bookmark-heart"></i>
                     <span>Write Feedback</span>
                 </a>
             </li><!-- End Register Page Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="{% url 'post:user-dashboard' %}?pages=post_track">
                     <i class="bi bi-geo-alt-fill"></i>
                     <span>Track Post</span>
                 </a>
@@ -40,131 +40,344 @@
 {% endblock %}
 
 {% block active_breadcrumb %}
-    dashboard
+    {% if page == None %}
+        dashboard
+    {% elif page == "write_feedback" %}
+        feedback
+    {% elif page == 'post_track' %}
+        tack
+    {% elif page == 'profile' %}
+        profile
+    {% endif %}
 {% endblock %}
 
 {% block middle %}
-    <div class="row">
-        <div class="col-lg-12">
+    {% load static %}
+    {% if page == "write_feedback" %}
+        <div class="row contact justify-content-center">
+            <div class="col-xl-6">
+                <h5 class="card-title text-center pb-0 fs-4">Please leave your feadback</h5>
+                <p class="text-center small">Enter your email & subject to submit</p>
+                <div class="card p-4">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="row gy-4">
 
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Your history.</h5>
+                            <div class="col-md-6">
+                                <input type="text" name="name" class="form-control" placeholder="Your Name"
+                                       value="{{ user.first_name|title }} {{ user.middle_name|title }}" required>
+                            </div>
 
-                    <table class="table datatable">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Position</th>
-                            <th scope="col">Age</th>
-                            <th scope="col">Start Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Brandon Jacob</td>
-                            <td>Designer</td>
-                            <td>28</td>
-                            <td>2016-05-25</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Bridie Kessler</td>
-                            <td>Developer</td>
-                            <td>35</td>
-                            <td>2014-12-05</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Ashleigh Langosh</td>
-                            <td>Finance</td>
-                            <td>45</td>
-                            <td>2011-08-12</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">4</th>
-                            <td>Angus Grady</td>
-                            <td>HR</td>
-                            <td>34</td>
-                            <td>2012-06-11</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">5</th>
-                            <td>Raheem Lehner</td>
-                            <td>Dynamic Division Officer</td>
-                            <td>47</td>
-                            <td>2011-04-19</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                            <div class="col-md-6 ">
+                                <input type="email" class="form-control" name="email" placeholder="Your Email"
+                                       value="{{ user.email }}" required>
+                            </div>
 
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" name="subject" placeholder="Subject">
+                            </div>
 
+                            <div class="col-md-12">
+                                <textarea class="form-control" name="message" rows="6" placeholder="Message"
+                                          required></textarea>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button type="submit" name="feedback" class="btn btn-primary">Send Message</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-
         </div>
-    </div>
-    <!-- Start of feedback -->
-    <!-- <div class="row contact justify-content-center">
-      <div class="col-xl-6">
-        <h5 class="card-title text-center pb-0 fs-4">Please leave your feadback</h5>
-        <p class="text-center small">Enter your email & subject to submit</p>
-        <div class="card p-4">
-          <form action="" method="post">
-            <div class="row gy-4">
+    {% elif page == 'post_track' %}
+        <div class="row contact justify-content-center">
+            <div class="col-xl-5 col-md-5">
+                <h5 class="card-title text-center pb-0 fs-4">Track Your Post</h5>
+                <p class="text-center small">Enter your track id to track item</p>
+                <div class="card p-4">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="row gy-4">
+                            <div class="col-md-6">
+                                <input type="text" name="track_id" class="form-control" placeholder="Your track id" required>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" name="track" class="btn btn-success">Track</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card p-4">
+                    <strong>Your item is Reached: </strong> <span>{{ track.post_location }}</span>
+                </div>
+            </div>
+        </div>
+    {% elif page == 'profile' %}
+        <div class="row">
+            <div class="col-xl-4">
 
-              <div class="col-md-6">
-                <input type="text" name="name" class="form-control" placeholder="Your Name" >
-              </div>
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-              <div class="col-md-6 ">
-                <input type="email" class="form-control" name="email" placeholder="Your Email" required>
-              </div>
-
-              <div class="col-md-12">
-                <input type="text" class="form-control" name="subject" placeholder="Subject">
-              </div>
-
-              <div class="col-md-12">
-                <textarea class="form-control" name="message" rows="6" placeholder="Message" required></textarea>
-              </div>
-
-              <div class="col-md-12 text-center">
-
-                <button type="submit" class="btn btn-primary">Send Message</button>
-              </div>
+                        <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+                        <h2>{{ user.first_name|title }} {{ user.middle_name|title }}</h2>
+                        <h3>{% if user.is_costumer == True %}
+                            Costumer
+                        {% elif user.is_admin == True %}
+                            Admin
+                        {% elif user.is_postman == True %}
+                            Post Man
+                        {% elif user.is_counter == True %}
+                            Counter
+                        {% endif %} </h3>
+                    </div>
+                </div>
 
             </div>
-          </form>
-        </div>
-      </div>
-    </div> -->
-    <!-- End of feedback -->
 
-    <!-- start of track -->
-    <!-- <div class="row contact justify-content-center">
-      <div class="col-xl-5 col-md-5">
-        <h5 class="card-title text-center pb-0 fs-4">Track Your Post</h5>
-        <p class="text-center small">Enter your track id to track item</p>
-        <div class="card p-4">
-          <form action="" method="post">
-            <div class="row gy-4">
+            <div class="col-xl-8">
 
-              <div class="col-md-6">
-                <input type="number" name="name" class="form-control" placeholder="Your track id" >
-              </div>
-              <div class="col-md-6">
-                <button type="submit" name="search" class="btn btn-success">Track</button>
-              </div>
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
+                                    Overview
+                                </button>
+                            </li>
+
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
+                                    Profile
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">
+                                    Change Password
+                                </button>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content pt-2">
+
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+
+                                <h5 class="card-title">Profile Details</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.first_name|title }} {{ user.middle_name|title }} {{ user.last_name|title }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Company</div>
+                                    <div class="col-lg-9 col-md-8">Ethiopian Post Service</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Job</div>
+                                    <div class="col-lg-9 col-md-8">{% if user.is_costumer == True %}
+                                        Costumer
+                                    {% elif user.is_admin == True %}
+                                        Admin
+                                    {% elif user.is_postman == True %}
+                                        Post Man
+                                    {% elif user.is_counter == True %}
+                                        Counter
+                                    {% endif %} </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Sex</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.sex }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.address }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.phone }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.email }}</div>
+                                </div>
+
+                            </div>
+
+                            <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
+                                            Image</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile">
+                                            <div class="pt-2">
+                                                <a href="#" class="btn btn-primary btn-sm"
+                                                   title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                   title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12">
+                                        <label for="" class="form-label">{{ form.label }}</label>
+                                        {{ form }}
+                                        <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
+                                    </div>
+
+                                    {% for form in update_form %}
+
+                                        <div class="row mb-3">
+                                            <label for="{{ form.id_for_label }}"
+                                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                                            <div class="col-md-8 col-lg-9">
+                                                {{ form }}
+                                            </div>
+                                        </div>
+
+                                    {% endfor %}
+
+                                    <div class="text-center">
+                                        <button name="update" type="submit" class="btn btn-primary">Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="tab-pane fade pt-3" id="profile-change-password">
+                                <form method="post" action="{% url 'account:update_password' user.id %}">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="current_password" type="password" class="form-control"
+                                                   id="currentPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="new_password" type="password" class="form-control"
+                                                   id="newPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="renew_password" class="col-md-4 col-lg-3 col-form-label">Re-enter
+                                            New
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="renew_password" type="password" class="form-control"
+                                                   id="renewPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" name="password_update" class="btn btn-primary">Change
+                                            Password
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-          </form>
         </div>
-        <div class="card p-4">
-          <strong>Your item is Reached: </strong> <span>Addis Ababa, Ethiopia</span>
+    {% else%}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Your send and received history.</h5>
+                        <table class="table datatable">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Track id</th>
+                                <th scope="col">Sender</th>
+                                <th scope="col">S. phone</th>
+                                <th scope="col">S. Address</th>
+                                <th scope="col">Receiver</th>
+                                <th scope="col">R. phone</th>
+                                <th scope="col">S. Address</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for post in post_list.0 %}
+                                <tr>
+                                    <td>{{ post.id }}</td>
+                                    <th class="font-monospace">{{ post.track_id }}</th>
+                                    {% if post.is_sender_member %}
+                                        <td>{{ post.sender.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                        <td>{{ post.sender.phone }}</td>
+                                        <td>{{ post.sender.address }}</td>
+                                    {% else %}
+                                        <td>{{ post.sender_full_name }}</td>
+                                        <td>{{ post.sender_phone }}</td>
+                                        <td>{{ post.sender_address }}</td>
+                                    {% endif %}
+                                    {% if post.is_receiver_member %}
+                                        <td>{{ post.receiver.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                        <td>{{ post.receiver.phone }}</td>
+                                        <td>{{ post.receiver.address }}</td>
+                                    {% else %}
+                                        <td>{{ post.rec_full_name }}</td>
+                                        <td>{{ post.rec_phone }}</td>
+                                        <td>{{ post.rec_address }}</td>
+                                    {% endif %}
+                                     <td class="bg-info">Sent</td>
+                                </tr>
+                            {% endfor %}
+                            {% for post in post_list.1 %}
+                                <tr>
+                                    <td>{{ post.id }}</td>
+                                    <td></td>
+                                    {% if post.is_sender_member %}
+                                        <td>{{ post.sender.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                        <td>{{ post.sender.phone }}</td>
+                                        <td>{{ post.sender.address }}</td>
+                                    {% else %}
+                                        <td>{{ post.sender_full_name }}</td>
+                                        <td>{{ post.sender_phone }}</td>
+                                        <td>{{ post.sender_address }}</td>
+                                    {% endif %}
+                                    {% if post.is_receiver_member %}
+                                        <td>{{ post.receiver.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                        <td>{{ post.receiver.phone }}</td>
+                                        <td>{{ post.receiver.address }}</td>
+                                    {% else %}
+                                        <td>{{ post.rec_full_name }}</td>
+                                        <td>{{ post.rec_phone }}</td>
+                                        <td>{{ post.rec_address }}</td>
+                                    {% endif %}
+                                     <td class="bg-success">Received</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div> -->
-    <!-- End of track -->
+    {% endif %}
 {% endblock %}

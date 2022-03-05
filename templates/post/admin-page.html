@@ -6,9 +6,7 @@
 
 {% block aside %}
     <aside id="sidebar" class="sidebar">
-
         <ul class="sidebar-nav" id="sidebar-nav">
-
             <li class="nav-item">
                 <a class="nav-link collapsed" href="{% url 'post:admin-dashboard' %}">
                     <i class="bi bi-grid"></i>
@@ -99,12 +97,6 @@
                     <span>View Feedback</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="{% url 'post:admin-dashboard' %}?pages=generate_report">
-                    <i class="bi bi-receipt-cutoff"></i>
-                    <span>Generate Report</span>
-                </a>
-            </li>
         </ul>
 
     </aside>
@@ -127,12 +119,12 @@
         registration
     {% elif page|slice:':4' == 'user' or page == None %}
         user
-    {% elif page == 'generate_report' %}
-        report
     {% elif page == 'view_feedback' %}
         feedback
     {% elif page == 'mail_cost' %}
         mail
+    {% elif page == 'update_user' %}
+        update
     {% else %}
         dashboard
     {% endif %}
@@ -148,34 +140,9 @@
                     <div class="card-body">
 
                         <div class="pt-4 pb-2">
-                            {% if messages %}
-                                {% for message in messages %}
-
-                                    {% if message.level == DEFAULT_MESSAGE_LEVELS.DEBUG %}
-                                        <div class="swal2-icon swal2-success swal2-animate-success-icon" style="display: flex;">
-                            <div class="swal2-success-circular-line-left"
-                                 style="background-color: rgb(255, 255, 255);"></div>
-                            <span class="swal2-success-line-tip"></span>
-                            <span class="swal2-success-line-long"></span>
-                            <div class="swal2-success-ring"></div>
-                            <div class="swal2-success-fix" style="background-color: rgb(255, 255, 255);"></div>
-                            <div class="swal2-success-circular-line-right"
-                                 style="background-color: rgb(255, 255, 255);"></div>
-                            </div>
-                                      {% endif %}
-
-                                <h5 class="card-title text-center text-success">Your image successful uploaded. {{ message }}</h5>
-
-
-                                {% endfor %}
-                            {% endif %}
-
                             <h5 class="card-title text-center pb-0 fs-4">Upload memorial photos</h5>
                             <p class="text-center small">Enter title, caption & image to upload</p>
                         </div>
-
-
-
                         <form method="post" action="" enctype="multipart/form-data" class="row g-3 needs-validation"
                               novalidate>
                             {% csrf_token %}
@@ -212,15 +179,15 @@
                     <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
                         <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
-                        <h2>{{ user.first_name }} {{ user.middle_name }}</h2>
+                        <h2>{{ user.first_name|title }} {{ user.middle_name|title }}</h2>
                         <h3>{% if user.is_costumer == True %}
-                                Costumer
-                            {% elif user.is_admin == True %}
-                                Admin
-                            {% elif user.is_postman == True %}
-                                Post Man
-                            {% elif user.is_counter == True %}
-                                Counter
+                            Costumer
+                        {% elif user.is_admin == True %}
+                            Admin
+                        {% elif user.is_postman == True %}
+                            Post Man
+                        {% elif user.is_counter == True %}
+                            Counter
                         {% endif %} </h3>
                     </div>
                 </div>
@@ -240,7 +207,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit"
+                                        onclick="blur_password()">Edit
                                     Profile
                                 </button>
                             </li>
@@ -259,7 +227,7 @@
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                    <div class="col-lg-9 col-md-8">{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.first_name|title }} {{ user.middle_name|title }} {{ user.last_name|title }}</div>
                                 </div>
 
                                 <div class="row">
@@ -270,14 +238,14 @@
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Job</div>
                                     <div class="col-lg-9 col-md-8">{% if user.is_costumer == True %}
-                                                                        Costumer
-                                                                    {% elif user.is_admin == True %}
-                                                                        Admin
-                                                                    {% elif user.is_postman == True %}
-                                                                        Post Man
-                                                                    {% elif user.is_counter == True %}
-                                                                        Counter
-                                                                {% endif %} </div>
+                                        Costumer
+                                    {% elif user.is_admin == True %}
+                                        Admin
+                                    {% elif user.is_postman == True %}
+                                        Post Man
+                                    {% elif user.is_counter == True %}
+                                        Counter
+                                    {% endif %} </div>
                                 </div>
 
                                 <div class="row">
@@ -305,7 +273,8 @@
                             <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
 
-                                <form >
+                                <form method="post" action="">
+                                    {% csrf_token %}
                                     <div class="row mb-3">
                                         <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
                                             Image</label>
@@ -320,112 +289,40 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mb-3">
-                                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="fullName" type="text" class="form-control" id="fullName"
-                                                   value="Kevin Anderson">
-                                        </div>
+
+                                    <div class="col-12">
+                                        <label for="" class="form-label">{{ form.label }}</label>
+                                        {{ form }}
+                                        <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
                                     </div>
 
-                                    <div class="row mb-3">
-                                        <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <textarea name="about" class="form-control" id="about"
-                                                      style="height: 100px">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
-                                        </div>
-                                    </div>
+                                    {% for form in update_form %}
 
-                                    <div class="row mb-3">
-                                        <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="company" type="text" class="form-control" id="company"
-                                                   value="Lueilwitz, Wisoky and Leuschke">
+                                        <div class="row mb-3">
+                                            <label for="{{ form.id_for_label }}"
+                                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                                            <div class="col-md-8 col-lg-9">
+                                                {{ form }}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="row mb-3">
-                                        <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="job" type="text" class="form-control" id="Job"
-                                                   value="Web Designer">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="country" type="text" class="form-control" id="Country"
-                                                   value="USA">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Address" class="col-md-4 col-lg-3 col-form-label">Address</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="address" type="text" class="form-control" id="Address"
-                                                   value="A108 Adam Street, New York, NY 535022">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="phone" type="text" class="form-control" id="Phone"
-                                                   value="(436) 486-3538 x29071">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="email" type="email" class="form-control" id="Email"
-                                                   value="k.anderson@example.com">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter
-                                            Profile</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="twitter" type="text" class="form-control" id="Twitter"
-                                                   value="https://twitter.com/#">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook
-                                            Profile</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="facebook" type="text" class="form-control" id="Facebook"
-                                                   value="https://facebook.com/#">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram
-                                            Profile</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="instagram" type="text" class="form-control" id="Instagram"
-                                                   value="https://instagram.com/#">
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin
-                                            Profile</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input name="linkedin" type="text" class="form-control" id="Linkedin"
-                                                   value="https://linkedin.com/#">
-                                        </div>
-                                    </div>
+                                    {% endfor %}
 
                                     <div class="text-center">
-                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        <button name="update" type="submit" class="btn btn-primary">Save Changes
+                                        </button>
                                     </div>
                                 </form>
                             </div>
-
+                            <script>
+                                function blur_password() {
+                                    let pass = document.getElementById('id_password')
+                                    pass.removeAttribute('required')
+                                    pass.setAttribute('type', 'hidden')
+                                    pass.value =
+                                    {{user.password}}
+                                }
+                            </script>
                             <div class="tab-pane fade pt-3" id="profile-change-password">
                                 <form method="post" action="{% url 'account:update_password' user.id %}">
                                     {% csrf_token %}
@@ -448,7 +345,8 @@
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="renew_password" class="col-md-4 col-lg-3 col-form-label">Re-enter New
+                                        <label for="renew_password" class="col-md-4 col-lg-3 col-form-label">Re-enter
+                                            New
                                             Password</label>
                                         <div class="col-md-8 col-lg-9">
                                             <input name="renew_password" type="password" class="form-control"
@@ -457,7 +355,9 @@
                                     </div>
 
                                     <div class="text-center">
-                                        <button type="submit" name="password_update" class="btn btn-primary">Change Password</button>
+                                        <button type="submit" name="password_update" class="btn btn-primary">Change
+                                            Password
+                                        </button>
                                     </div>
                                 </form>
 
@@ -514,17 +414,101 @@
                 </div>
             </div>
         </div>
-    {% elif page|slice:':4' == 'user' or page == None %}
+    {% elif page == "update_user" %}
+        <div class="pt-3 w-50 m-auto">
+            <h3 class="card-header text-center font-monospace">Update User Account {{ user.password }}</h3>
+            <form method="post" action="">
+                {% csrf_token %}
+                {% for form in update_form %}
+                    {% if forloop.counter0 == 4 %}
+                        <div class="row mb-3">
+                            <label for="password"
+                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                            <div class="col-md-8 col-lg-9">
+                                <input type="password" id="id_password" name="password" class="form-control"
+                                       value="{{ user.password }}">
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="row mb-3">
+                            <label for="{{ form.id_for_label }}"
+                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                            <div class="col-md-8 col-lg-9">
+                                {{ form }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
+                <div class="text-center">
+                    <button name="update_s_user" type="submit" class="btn btn-primary">Save Changes
+                    </button>
+                </div>
+            </form>
+            <script>
+                let pass = document.getElementById('id_password')
+                pass.removeAttribute('required')
+                pass.setAttribute('type', 'hidden')
+            </script>
+        </div>
+    {% elif page == 'view_feedback' %}
+        <div class="row">
+            <div class="col-lg-9">
+                <h5 class="card-title">Feedback's</h5>
+                {% for feedback in feedbacks %}
+                    <div class="card">
+                        <h5 class="card-header">{{ feedback.subject }}</h5>
+                        <div class="card-body pt-4">
+                            {{ feedback.body }}
+                        </div>
+                        <div class="card-footer">
+                            <span style="float: right;margin-right: 20px;">By {{ feedback.name }} on {{ feedback.date }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    {% elif page == 'mail_cost' %}
+        <div class="row">
+            <div class="col-lg-9">
+                <h5 class="card-title">Update the fee of post based on weight.</h5>
+                <div class="card">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="card-body pt-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" name="weight" class="form-control" placeholder="Weight in Kg.">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="cost" class="form-control" placeholder="Cost in Birr.">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span style="float: right;margin-right: 40px;"><button name="mail_cost"
+                                                                                   class="mb-2 btn btn-sm btn-success"
+                                                                                   type="submit">Update</button></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="our-custom-model card m-auto d-none">
+            <div class="modal-header">
+                <h5 class="modal-title font-monospace ">Are you sure you want to delete the selected user?</h5>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="iamsure" class="btn btn-danger">Yes, I’m sure</a>
+                <a href="#" onclick="rm()" id="notsure" class="btn btn-secondary">No, take me back</a>
+            </div>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                {% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
                     <div class="card-body">
                         <h5 class="card-title pl-3">List of users.</h5>
                         <div class="card">
@@ -541,79 +525,52 @@
                         <table class="table datatable">
                             <thead>
                             <tr>
-                                <th scope="col">#(id)</th>
+                                <th scope="col">id</th>
                                 <th scope="col">Full name</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Sex</th>
                                 <th scope="col">Phone</th>
                                 <th scope="col">Address</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for user in users %}
                                 <tr>
                                     <th scope="row">{{ user.id }}</th>
-                                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td>{{ user.first_name }} {{ user.middle_name }}</td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.sex }}</td>
                                     <td>{{ user.phone }}</td>
                                     <td>{{ user.address }}</td>
+                                    <td><a href="{% url 'post:admin-dashboard' %}?pages=update_user&id={{ user.id }}"
+                                           class="btn btn-sm btn-primary">Update</a></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="dume(this)"
+                                                value="{{ user.id }}">Delete
+                                        </button>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
                         </table>
-
-
                     </div>
                 </div>
+                <script>
+                    function rm(){
+                        let ds = document.getElementsByClassName('our-custom-model')[0]
+                        ds.classList.add('d-none')
+                    }
+                    function dume(btn) {
+                        let ds = document.getElementsByClassName('our-custom-model')[0]
+                        let a_sure = document.getElementById('iamsure')
 
-            </div>
-        </div>
-    {% elif page == 'generate_report' %}
-        <h2>Sorry we add template soon.</h2>
-    {% elif page == 'view_feedback' %}
-        <div class="row">
-            <div class="col-lg-9">
-                <h5 class="card-title">Feedback's</h5>
-                <div class="card">
-                    <div class="card-body pt-4">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </div>
-                    <div class="card-footer">
-                        <span style="float: right;margin-right: 20px;">By Esubalew on 2010-34-12</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% elif page == 'mail_cost' %}
-        <div class="row">
-            <div class="col-lg-9">
-                <h5 class="card-title">Update the fee of post based on length.</h5>
-                <div class="card">
-                    <form method="post" action="">
-                        {% csrf_token %}
-                        <div class="card-body pt-4">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" name="length" class="form-control" placeholder="distance in km.">
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="text" name="cost" class="form-control" placeholder="Cost in birr.">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span style="float: right;margin-right: 40px;"><button name="mail_cost"
-                                                                                   class="mb-2 btn btn-sm btn-success"
-                                                                                   type="submit">Update</button></span>
-                        </div>
-                    </form>
-                </div>
+                        a_sure.setAttribute('href', '/account/delete/' + btn.value + '/')
+
+                        ds.classList.toggle('d-none')
+                    }
+                </script>
             </div>
         </div>
     {% endif %}

@@ -10,30 +10,49 @@
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="admin-page.html">
+                <a class="nav-link collapsed" href="/{% if role == 'costumer' %}user{% else %}{{ role }}{% endif %}/">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
             </li><!-- End Dashboard Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="{% url 'post:counter-dashboard' %}?pages=register_post">
                     <i class="bi bi-plus-square-fill"></i>
                     <span>Register Post</span>
                 </a>
             </li><!-- End Register Page Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="{% url 'post:counter-dashboard' %}?pages=assign_postman">
                     <i class="bi bi-tags-fill"></i>
                     <span>Assign Post Man</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="{% url 'post:counter-dashboard' %}?pages=update_location">
                     <i class="bi bi-pin-map-fill"></i>
                     <span>Update Location</span>
                 </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse"
+                   href="{% url 'post:counter-dashboard' %}?pages=generate_report">
+                    <i class="bi bi-card-checklist"></i><span>Generate Report</span><i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{% url 'post:counter-dashboard' %}?pages=generate_report&time=daily">
+                            <i class="bi bi-circle"></i><span>Daily Report</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'post:counter-dashboard' %}?pages=generate_report&time=weekly">
+                            <i class="bi bi-circle"></i><span>Weekly Report</span>
+                        </a>
+                    <li>
+                </ul>
             </li>
         </ul>
 
@@ -45,77 +64,470 @@
 {% endblock %}
 
 {% block active_breadcrumb %}
-    dashboard
+    {% if page == 'generate_report' %}
+        report
+    {% elif page == 'register_post' %}
+        register
+    {% elif page == 'profile' %}
+        profile
+    {% elif page == "update_location" %}
+        location
+    {% elif page == "update_location" %}
+        user
+    {% elif page == 'assign_postman' %}
+        assign
+    {% else %}
+        dashboard
+    {% endif %}
 {% endblock %}
 
 {% block middle %}
-    <div class="row">
-        <div class="col-lg-12">
+    {% if page == 'generate_report' %}
+        <div class="card-title">Select type report you wanna download</div>
+        <div class="card">
+            <div class="card-body mt-3">
+                <form action="" method="post" class="w-25 d-inline-flex">
+                    {% csrf_token %}
+                    <input type="date" class="form-control" name="date" required>
+                    <input class="btn btn-sm btn-success" type="submit" name="selected_date" value="Daily Report">
+                </form>
+                <a href="{% url 'post:counter-dashboard' %}?pages=generate_report&time=weekly"
+                   class="btn btn-primary btn-sm">Weekly</a>
+            </div>
+        </div>
 
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">List of users.</h5>
+    {% elif page == 'register_post' %}
+        <div class="row justify-content-center">
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="pt-4 pb-2">
+                            <h5 class="card-title text-center pb-0 fs-4">Register Post</h5>
+                            <p class="text-center small text-danger">If you select the sender and receiver from dropdown
+                                menu other fields regarding sender & receiver info are optional and vice versa.</p>
+                            <div class="col-12">
+                                <input type="text" id="input_kg" class="form-control"
+                                       placeholder="Your item in Kg." required></div>
+                            <div class="col-12 mt-2">
+                                <input type="text" id="input_cost" class="form-control" value=" 20 birr for this Service">
+                            </div>
+                            <script>
+                                let inkg = document.getElementById("input_kg")
+                                let incost = document.getElementById("input_cost")
 
-                    <table class="table datatable">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Position</th>
-                            <th scope="col">Age</th>
-                            <th scope="col">Start Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Brandon Jacob</td>
-                            <td>Designer</td>
-                            <td>28</td>
-                            <td>2016-05-25</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Bridie Kessler</td>
-                            <td>Developer</td>
-                            <td>35</td>
-                            <td>2014-12-05</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Ashleigh Langosh</td>
-                            <td>Finance</td>
-                            <td>45</td>
-                            <td>2011-08-12</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">4</th>
-                            <td>Angus Grady</td>
-                            <td>HR</td>
-                            <td>34</td>
-                            <td>2012-06-11</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">5</th>
-                            <td>Raheem Lehner</td>
-                            <td>Dynamic Division Officer</td>
-                            <td>47</td>
-                            <td>2011-04-19</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">5</th>
-                            <td>Raheem Lehner</td>
-                            <td>Dynamic Division Officer</td>
-                            <td>47</td>
-                            <td>2011-04-19</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
+                                inkg.onkeyup = function () {
+                                    incost.value = 'We discharge you '+((parseInt(inkg.value)* {{ cost.cost }})/{{ cost.weight }})+" birr for this Service";
+                                }
+                            </script>
+                        </div>
+                        <form method="post" action="" class="row g-3 needs-validation" novalidate>
+                            {% csrf_token %}
+                            {% for form in post_form %}
+                                <div class="col-12">
+                                    <label for="{{ form.id_for_label }}" class="form-label">{{ form.label }}</label>
+                                    {{ form }}
+                                    <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
+                                </div>
+                            {% endfor %}
+                            <div class="col-12">
+                                <button name="register_post" class="btn btn-primary w-100" type="submit"
+                                        onclick="gamma()">Register Post
+                                </button>
+                            </div>
+                            <script>
+                                function gamma() {
+                                    const sender = document.getElementById('id_sender');
+                                    const id_sender_full_name = document.getElementById('id_sender_full_name');
+                                    const id_sender_phone = document.getElementById('id_sender_phone');
+                                    const id_sender_address = document.getElementById('id_sender_address');
+                                    const id_receiver = document.getElementById('id_receiver');
+                                    const id_rec_full_name = document.getElementById('id_rec_full_name');
+                                    const id_rec_phone = document.getElementById('id_rec_phone');
+                                    const id_rec_address = document.getElementById('id_rec_address');
 
+
+                                    if (sender.value === "") {
+                                        id_sender_full_name.setAttribute("required", "true")
+                                        id_sender_phone.setAttribute("required", "true")
+                                        id_sender_address.setAttribute("required", "true")
+                                    } else {
+                                        id_sender_full_name.removeAttribute('required')
+                                        id_sender_phone.removeAttribute('required')
+                                        id_sender_address.removeAttribute('required')
+                                    }
+                                    if (id_receiver.value === "") {
+                                        id_rec_full_name.setAttribute("required", "true")
+                                        id_rec_phone.setAttribute("required", "true")
+                                        id_rec_address.setAttribute("required", "true")
+                                    } else {
+                                        id_rec_full_name.removeAttribute('required')
+                                        id_rec_phone.removeAttribute('required')
+                                        id_rec_address.removeAttribute('required')
+                                    }
+                                }
+                            </script>
+                        </form>
+                    </div>
                 </div>
             </div>
-
         </div>
-    </div>
+    {% elif page == 'profile' %}
+        {% load static %}
+        <div class="row">
+            <div class="col-xl-4">
+
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+                        <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+                        <h2>{{ user.first_name|title }} {{ user.middle_name|title }}</h2>
+                        <h3>{% if user.is_costumer == True %}
+                            Costumer
+                        {% elif user.is_admin == True %}
+                            Admin
+                        {% elif user.is_postman == True %}
+                            Post Man
+                        {% elif user.is_counter == True %}
+                            Counter
+                        {% endif %} </h3>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-xl-8">
+
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
+                                    Overview
+                                </button>
+                            </li>
+
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
+                                    Profile
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">
+                                    Change Password
+                                </button>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content pt-2">
+
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+
+                                <h5 class="card-title">Profile Details</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.first_name|title }} {{ user.middle_name|title }} {{ user.last_name|title }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Company</div>
+                                    <div class="col-lg-9 col-md-8">Ethiopian Post Service</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Job</div>
+                                    <div class="col-lg-9 col-md-8">{% if user.is_costumer == True %}
+                                        Costumer
+                                    {% elif user.is_admin == True %}
+                                        Admin
+                                    {% elif user.is_postman == True %}
+                                        Post Man
+                                    {% elif user.is_counter == True %}
+                                        Counter
+                                    {% endif %} </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Sex</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.sex }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.address }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.phone }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.email }}</div>
+                                </div>
+
+                            </div>
+
+                            <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
+                                            Image</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile">
+                                            <div class="pt-2">
+                                                <a href="#" class="btn btn-primary btn-sm"
+                                                   title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                   title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12">
+                                        <label for="" class="form-label">{{ form.label }}</label>
+                                        {{ form }}
+                                        <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
+                                    </div>
+
+                                    {% for form in update_form %}
+
+                                        <div class="row mb-3">
+                                            <label for="{{ form.id_for_label }}"
+                                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                                            <div class="col-md-8 col-lg-9">
+                                                {{ form }}
+                                            </div>
+                                        </div>
+
+                                    {% endfor %}
+
+                                    <div class="text-center">
+                                        <button name="update" type="submit" class="btn btn-primary">Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="tab-pane fade pt-3" id="profile-change-password">
+                                <form method="post" action="{% url 'account:update_password' user.id %}">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="current_password" type="password" class="form-control"
+                                                   id="currentPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="new_password" type="password" class="form-control"
+                                                   id="newPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="renew_password" class="col-md-4 col-lg-3 col-form-label">Re-enter
+                                            New
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="renew_password" type="password" class="form-control"
+                                                   id="renewPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" name="password_update" class="btn btn-primary">Change
+                                            Password
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {% elif page == "update_location" %}
+        <div class="row justify-content-center">
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="pt-4 pb-2">
+                            <h5 class="card-title text-center pb-0 fs-4">Update Post Location</h5>
+                            <p class="text-center small font-monospace">Update post location by selecting one or
+                                more.</p>
+                            <p class="text-center font-monospace text-primary">Hold down “Control” on Window, or
+                                “Command” on a Mac, to select more than one.</p>
+                        </div>
+                        <form method="post" action="" class="row g-3 needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="col-12">
+                                <label for="update_post_location" class="form-label">Post's</label>
+                                <select name="post_select" id="update_post_location" class="form-control" multiple
+                                        required>
+                                    {% for post in posts %}
+                                        <option value="{{ post.id }}">Sender: {{ post }} & Post
+                                            id: {{ post.id }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please, select one or more post!</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="post_location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="post_location" name="location" required>
+                                <div class="invalid-feedback">Please, enter location!</div>
+                            </div>
+                            <div class="col-12">
+                                <button name="update_location" class="btn btn-primary w-100" type="submit">Update
+                                    Location
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif page == 'assign_postman' %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title bold text-success">List of post which postman not assigned!.</h5>
+                        <table class="table datatable">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Sender</th>
+                                <th scope="col">S. Address</th>
+                                <th scope="col">Receiver</th>
+                                <th scope="col">S. Address</th>
+                                <th scope="col"><a class="btn btn-primary btn-sm">First Select postman & Assign</a></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for post in posts %}
+                                {% if post.postman == None %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        {% if post.is_sender_member %}
+                                            <td>{{ post.sender.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                            <td>{{ post.sender.address }}</td>
+                                        {% else %}
+                                            <td>{{ post.sender_full_name }}</td>
+                                            <td>{{ post.sender_address }}</td>
+                                        {% endif %}
+                                        {% if post.is_receiver_member %}
+                                            <td>{{ post.receiver.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                            <td>{{ post.receiver.address }}</td>
+                                        {% else %}
+                                            <td>{{ post.rec_full_name }}</td>
+                                            <td>{{ post.rec_address }}</td>
+                                        {% endif %}
+                                        <td>
+                                            <form action="" method="post" style="display: inline !important;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="post_id" value="{{ post.id }}">
+                                                <div class="row">
+                                                    <div class="col-md-7 col-sm-8">
+                                                        <select name="postman_assigned" class="form-control">
+                                                            {% for foo in postman %}
+                                                                <option value="{{ foo.id }}">{{ foo.first_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-5 col-sm-4">
+                                                        <input type="submit" name="assign_postman"
+                                                               class="form-control bg-success" value="Assign">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">List of registered post.</h5>
+                        <table class="table datatable">
+                            <thead>
+                            <tr>
+                                <th scope="col">post</th>
+                                <th scope="col">Sender</th>
+                                <th scope="col">S. phone</th>
+                                <th scope="col">S. Address</th>
+                                <th scope="col">Receiver</th>
+                                <th scope="col">R. phone</th>
+                                <th scope="col">S. Address</th>
+                                <th scope="col">Post man</th>
+                                <th scope="col">L. Post?</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for post in posts %}
+                                <tr>
+                                    <th scope="row">{{ post.id }}</th>
+                                    {% if post.is_sender_member %}
+                                        <td>{{ post.sender.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                        <td>{{ post.sender.phone }}</td>
+                                        <td>{{ post.sender.address }}</td>
+                                    {% else %}
+                                        <td>{{ post.sender_full_name }}</td>
+                                        <td>{{ post.sender_phone }}</td>
+                                        <td>{{ post.sender_address }}</td>
+                                    {% endif %}
+                                    {% if post.is_receiver_member %}
+                                        <td>{{ post.receiver.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                                        <td>{{ post.receiver.phone }}</td>
+                                        <td>{{ post.receiver.address }}</td>
+                                    {% else %}
+                                        <td>{{ post.rec_full_name }}</td>
+                                        <td>{{ post.rec_phone }}</td>
+                                        <td>{{ post.rec_address }}</td>
+                                    {% endif %}
+                                    {% if post.postman == None %}
+                                        <td>Not Assigned</td>
+                                    {% else %}
+                                        <td>{{ post.postman }}</td>
+                                    {% endif %}
+                                    <td>{{ post.post_location }}</td>
+
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}

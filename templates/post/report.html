@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report</title>
+</head>
+<style>
+    @page {
+        size: {{ pagesize|default:"A4" }};
+        margin: 2.5cm 1.5cm 1.5cm 1.5cm;
+    }
+
+
+</style>
+<body>
+<h1>Ethiopian Post Office Report</h1>
+<table class="table" style="border-collapse: collapse">
+    <thead>
+    <tr>
+        <th scope="col">id</th>
+        <th scope="col">Sender</th>
+        <th scope="col">S. phone</th>
+        <th scope="col">S. Address</th>
+        <th scope="col">Receiver</th>
+        <th scope="col">R. phone</th>
+        <th scope="col">S. Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for post in posts %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            {% if post.is_sender_member %}
+                <td>{{ post.sender.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                <td>{{ post.sender.phone }}</td>
+                <td>{{ post.sender.address }}</td>
+            {% else %}
+                <td>{{ post.sender_full_name }}</td>
+                <td>{{ post.sender_phone }}</td>
+                <td>{{ post.sender_address }}</td>
+            {% endif %}
+            {% if post.is_receiver_member %}
+                <td>{{ post.receiver.first_name|title }} {{ post.sender.middle_name|title }}</td>
+                <td>{{ post.receiver.phone }}</td>
+                <td>{{ post.receiver.address }}</td>
+            {% else %}
+                <td>{{ post.rec_full_name }}</td>
+                <td>{{ post.rec_phone }}</td>
+                <td>{{ post.rec_address }}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

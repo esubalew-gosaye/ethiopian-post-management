@@ -27,8 +27,29 @@
     <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
 </head>
 
-<body class="toggle-sidebar">
+<body class="toggle-sidebar" onload="post_none()">
+<div class="page-wrapper ">
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS or message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+            <div class="custom-modal">
+                <div class="succes succes-animation icon-top"><i class="bi bi-check2"></i></div>
 
+                <div class="content">
+                    <p class="message-type text-center small text-success">{{ message }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="custom-modal">
+                <div class="danger danger-animation icon-top"><i class="bi bi-x-lg"></i></div>
+                <div class="content">
+                    <p class="message-type text-danger">{{ message }}</p>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
 <!-- ======= Header ======= -->
 <header id="header" class="header fixed-top d-flex align-items-center">
 
@@ -64,7 +85,14 @@
 
         {% endblock %}
     </section>
-
+<script>
+    function post_none(){
+        setTimeout( function (){
+            var cm = document.getElementsByClassName('custom-modal')[0];
+            cm.classList.add('post_none');
+        }, 2000);
+    }
+</script>
 </main><!-- End #main -->
 
 <!-- ======= Footer ======= -->

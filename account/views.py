@@ -1,23 +1,17 @@
+from symbol import try_stmt
+
 from django.shortcuts import render, redirect
 from .forms import *
+from .inc import user_status
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.http import QueryDict
-from urllib.parse import *
 from .models import User
 
 
-def url_with_querystring(path, **kwargs):
-    return path + '?' + urlencode(kwargs)
-
-
-qdict = QueryDict("", mutable=True)
-qdict.update({'foo': 'barr'})
-full_url = 'logout'+'?'+qdict.urlencode()
-
-
 def login(request):
+    fg = 'admin'
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -33,12 +27,17 @@ def login(request):
             else:
                 flag = "costumer"
             request.session["user-role"] = flag
+            fg = flag
             request.session["email"] = user.email
             if flag == 'costumer': flag = 'user'
+            messages.success(request, "Successfully logged in to system. welcome!")
             return redirect(f'post:{flag}-dashboard')
         else:
             messages.warning(request, "User doesn't exist!, with this credentials.")
-    return render(request, "post/login.html", {})
+    context = {
+        'role': fg
+    }
+    return render(request, "post/login.html", context)
 
 
 def register(request, role):
@@ -57,6 +56,7 @@ def register(request, role):
                 else:
                     gs.is_costumer = True
                 gs.save()
+                messages.success(request, "User is successfully registered!")
                 if role == 'customer':
                     messages.info(request, "Please login to proceed.")
                     return redirect("account:login")
@@ -85,14 +85,22 @@ def update_password(request, pk):
                 us.password = np
                 us.save()
                 messages.success(request, "Your password are successfully updated!")
+    qd = QueryDict("", mutable=True)
+    qd.update({'pages': 'profile'})
+    flag = user_status(request)
+    if flag == 'costumer': flag = 'user'
+    return redirect(reverse(f'post:{flag}-dashboard')+f'?{qd.urlencode()}')
+
+
+def delete_user(request, pk):
+    try:
+        us = User.objects.get(id=pk)
+        us.delete()
+        messages.success(request, "User successfully deleted!")
+    except:
+        messages.error(request, "User doesn't exist!")
+
     return redirect('post:admin-dashboard')
-
-
-def tempo(request):
-    rf = RegisterForm()
-    quick_add_order_url = url_with_querystring(reverse('account:logout'), subject='hello world!')
-    return HttpResponseRedirect(quick_add_order_url)
-
 
 def logout(request):
     request.session.pop("user-role", 0)
