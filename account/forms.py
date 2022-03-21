@@ -21,7 +21,7 @@ class RegisterForm(ModelForm):
             "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"}),
             "sex": forms.Select(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email Address"}),
-            "password": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password"}),
+            "password": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password", "minlength": "4"}),
             "address": forms.TextInput(attrs={"class": "form-control", "placeholder": "Address"}),
             "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "phone number"})
         }

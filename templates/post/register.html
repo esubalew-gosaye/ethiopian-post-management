@@ -10,47 +10,39 @@
 
 {% block middle %}
     <div class="row justify-content-center">
-            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="pt-4 pb-2">
-                            <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
-                            <p class="text-center small">Enter your personal details to create account</p>
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        <div class="text-center text-{% if message.tags %}{{ message.tags }}{% endif %} font-monospace fs-5">
-                                            {{ message }}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                        </div>
-                        <form method="post" action="" class="row g-3 needs-validation" novalidate>
-                            {% csrf_token %}
-                            {% for form in rf_form %}
-                                <div class="col-12">
-                                    <label for="{{ form.id_for_label }}" class="form-label">{{ form.label }}</label>
-                                    {{ form }}
-                                    <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
-                                </div>
-                            {% endfor %}
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="pt-4 pb-2">
+                        <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
+                        <p class="text-center small">Enter your personal details to create account</p>
 
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" name="terms" type="checkbox" checked
-                                           id="acceptTerms" required>
-                                    <label class="form-check-label" for="acceptTerms">I agree and accept the <a
-                                            href="#">terms and conditions</a></label>
-                                    <div class="invalid-feedback">You must agree before submitting.</div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button class="btn btn-primary w-100" type="submit">Create Account</button>
-                            </div>
-                        </form>
                     </div>
+                    <form method="post" action="" class="row g-3 needs-validation" novalidate>
+                        {% csrf_token %}
+                        {% for form in rf_form %}
+                            <div class="col-12">
+                                <label for="{{ form.id_for_label }}" class="form-label">{{ form.label }}</label>
+                                {{ form }}
+                                {% if forloop.counter0 == 4 %}
+                                    <div class="invalid-feedback">Make sure your password is more than 4 char.</div>
+                                {% else %}
+                                    <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100" type="submit">Create Account</button>
+                        </div>
+                        <div class="col-12">
+                            <p class="small mb-0">I had account ! <a href="{% url 'account:login' %}">Login to
+                                an account</a></p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 {% endblock %}
 
 

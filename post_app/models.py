@@ -26,6 +26,7 @@ class Carousel(models.Model):
 class Feedback(models.Model):
     class Meta:
         ordering = ('date',)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=21)
     email = models.EmailField()
     subject = models.CharField(max_length=30, blank=True, null=True)

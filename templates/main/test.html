@@ -17,55 +17,41 @@
 
     <!-- Template Main CSS File -->
     <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
-    <style>
-        .our-custom-model {
-            position: fixed;
-            z-index: 1000;
-            width: 40%;
-            top: 20%;
-            left: 30%;
-            transition:1s ease-in-out;
-        }
-    </style>
 </head>
 <body>
 
-{% for foo in post %}
-    <table>
-        <tr><td>{{ foo }}</td><td>{{ foo.date_send }}</td></tr>
-    </table>
-{% endfor %}
+<a href="#" onclick="kimash()" class="btn btn-sm btn-success m-3">Kimash</a>
+<div class="m-5">
+    <div id="area">
+        <input type="text" minlength="4">
+    </div>
+</div>
 
-<div class="our-custom-model card m-auto d-none">
-    <div class="modal-header">
-        <h5 class="modal-title font-monospace ">Are you sure you want to delete the selected user?</h5>
-    </div>
-    <div class="modal-footer">
-        <a href="#" id="iamsure" class="btn btn-danger">Yes, I’m sure</a>
-        <a href="#" id="notsure" class="btn btn-secondary">No, take me back</a>
-    </div>
-</div>
-<form action="" method="post" class="w-25 d-inline-flex">
-    {% csrf_token %}
-    <input type="date" class="form-control" name="date" required>
-    <input class="btn btn-sm btn-success" type="submit" name="selected_date" value="Generate Report">
-</form>
-<div>
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquam aliquid amet debitis, doloribus ducimus ea earum eligendi error esse, nam nihil nostrum officia qui, ratione recusandae sit unde veniam.
-</div>
-<button onclick="dume()" id="delete" value="7">click</button>
 <script>
-    function dume(){
-        let ds = document.getElementsByClassName('our-custom-model')[0]
-        let btn = document.getElementById('delete')
-        let a_sure = document.getElementById('iamsure')
-        let a_not_sure = document.getElementById('notsure')
-
-        a_sure.setAttribute('href', 'account:delete-user/'+btn.value+'/')
-        a_not_sure.setAttribute('href', '/admin/')
-
-        ds.classList.toggle('d-none')
-        return btn.value
+    function kimash(){
+        let ar = document.getElementById('area')
+        let link = window.location.search
+        let obj = {}
+        let key = ''
+        let value = ''
+        let turnk = true
+        for (let i = 1; i < link.length; i++) {
+            if(link[i]==="="){
+                turnk = false
+                continue
+            }else if(link[i]==="&"){
+                obj[key]=value
+                key = ""
+                value = ""
+                turnk = true
+                continue
+            }
+            if (turnk)
+                key+=link[i]
+            else
+                value+=link[i]
+        }
+        obj[key]=value
     }
 </script>
 

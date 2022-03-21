@@ -4,6 +4,7 @@ from account.inc import user_info, user_status
 from django.http import HttpResponse, HttpResponseRedirect
 from account.models import User
 from .models import *
+from .decorators import *
 from datetime import datetime, timedelta
 from .forms import *
 from account.forms import RegisterForm
@@ -16,6 +17,7 @@ import tempfile
 from django.db.models import Sum
 
 
+@login_first
 def test(request):
     qdict = QueryDict("", mutable=True)
     qdict.update({'pages': 'profile'})
@@ -62,6 +64,8 @@ def index(request):
     return render(request, "post/index.html", context)
 
 
+@login_first
+@admin_only
 def admin_dashboard(request):
     page = request.GET.get('pages')
     user_inf = user_info(request)
@@ -76,9 +80,12 @@ def admin_dashboard(request):
             users = users.filter(is_counter=True)
         elif page[5:] == 'postman':
             users = users.filter(is_postman=True)
+        elif page[5:] == 'manager':
+            users = users.filter(is_manager=True)
         else:
             users = users.filter(is_costumer=True)
     u_form = RegisterForm(instance=user_inf)
+    _i = None
     if page == "update_user":
         _i = User.objects.get(id=request.GET.get('id'))
         u_form = RegisterForm(instance=_i)
@@ -104,13 +111,7 @@ def admin_dashboard(request):
                 d = Carousel(title=f.get('title'), caption=f.get('caption'), photo=f.get('image'))
                 d.save()
                 messages.success(request, "Your photo successfully uploaded")
-        elif request.POST.get('update') is not None:
-            rs = RegisterForm(request.POST, instance=user_inf)
-            if rs.is_valid():
-                rs.save()
-                messages.success(request, "Account is successfully updated!")
-            else:
-                messages.error(request, "Account is not updated!")
+
         elif request.POST.get('update_s_user') is not None:
             hidden_id = request.GET.get('id')
             try:
@@ -127,9 +128,12 @@ def admin_dashboard(request):
         'page': page,
         'users': users,
         'user': user_inf,
+        'rf_form': RegisterForm(),
         'role': user_status(request),
+        'new_user_role': request.GET.get('new_user_role'),
         'notify': Post.objects.filter(receiver=user_inf, seen=False),
         'update_form': u_form,
+        'update_form_user': _i,
         'feedbacks': Feedback.objects.all(),
         'post_list': [
             Post.objects.filter(sender=user_inf),
@@ -139,6 +143,8 @@ def admin_dashboard(request):
     return render(request, 'post/admin-page.html', context)
 
 
+@login_first
+@counter_only
 def counter_dashboard(request):
     page = request.GET.get('pages')
     user_inf = user_info(request)
@@ -170,7 +176,7 @@ def counter_dashboard(request):
                 s = request.POST.get('date').split('-')
                 daily = Post.objects.filter(date_send__year=s[0], date_send__month=s[1], date_send__day=s[2])
                 response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+                response['Content-Disposition'] = 'attachment; filename="daily_report.pdf"'
                 response["Content-Transfer-Encoding"] = 'binary'
                 html_string = render_to_string('post/report.html', {'posts': daily})
                 html = HTML(string=html_string)
@@ -186,11 +192,10 @@ def counter_dashboard(request):
             week_ago = now - timedelta(days=7)
             weekly = Post.objects.filter(date_send__range=[week_ago, now])
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+            response['Content-Disposition'] = 'attachment; filename="weekly_report.pdf"'
             response["Content-Transfer-Encoding"] = 'binary'
             html_string = render_to_string('post/report.html', {'posts': weekly})
             html = HTML(string=html_string)
-
             rs = html.write_pdf()
             with tempfile.NamedTemporaryFile(delete=True) as output:
                 output.write(rs)
@@ -217,6 +222,8 @@ def counter_dashboard(request):
     return render(request, 'post/counter-page.html', context)
 
 
+@login_first
+@user_only
 def user_dashboard(request):
     page = request.GET.get('pages')
     user_inf = user_info(request)
@@ -231,14 +238,25 @@ def user_dashboard(request):
             fd.save()
             messages.success(request, "Thank you, we value your feedback.")
         elif request.POST.get('track') is not None:
-            tr = Post.objects.get(track_id=request.POST.get('track_id'))
-
+            tmp = Post.objects.filter(id=user_inf.id, track_id=request.POST.get('track_id'))
+            if len(tmp) == 0:
+                messages.error(request, "Track id is not valid")
+            else:
+                tr = tmp[0]
+    if page == "delete_comment":
+        id_ = request.GET.get('id')
+        try:
+            Feedback.objects.get(id=id_).delete()
+            messages.success(request, "Your Comment Deleted")
+        except:
+            pass
     context = {
         'page': page,
         'track': tr,
         'user': user_inf,
         'notify': Post.objects.filter(receiver=user_inf, seen=False),
         'role': user_status(request),
+        'feedbacks': Feedback.objects.filter(user=user_inf),
         'update_form': RegisterForm(instance=user_inf),
         'post_list': [
             Post.objects.filter(sender=user_inf),
@@ -248,6 +266,36 @@ def user_dashboard(request):
     return render(request, 'post/user-page.html', context)
 
 
+@login_first
+@manager_only
+def manager_dashboard(request):
+    page = request.GET.get('pages')
+    user_inf = user_info(request)
+    cntr = User.objects.filter(is_counter=True)
+    u_form = RegisterForm(instance=user_inf)
+    _i = None
+    if page is not None and page[:3] == "add":
+        return HttpResponseRedirect(reverse('account:register', args=['counter']))
+    if page == "update_user":
+        _i = User.objects.get(id=request.GET.get('id'))
+        u_form = RegisterForm(instance=_i)
+
+    context = {
+        'page': page,
+        'user': user_inf,
+        'rf_form': RegisterForm(),
+        'update_form': u_form,
+        'update_form_user': _i,
+        'new_user_role': request.GET.get('new_user_role'),
+        'notify': Post.objects.filter(receiver=user_inf, seen=False),
+        'role': user_status(request),
+        'counters': cntr,
+    }
+    return render(request, 'post/manager-page.html', context)
+
+
+@login_first
+@postman_only
 def postman_dashboard(request):
     page = request.GET.get('pages')
     user_inf = user_info(request)
@@ -275,6 +323,7 @@ def postman_dashboard(request):
     return render(request, 'post/postman-page.html', context)
 
 
+@login_first
 def all_to_seen(request, pk):
     us = user_info(request)
     if pk == 'none':

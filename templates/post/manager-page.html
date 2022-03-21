@@ -1,0 +1,396 @@
+{% extends 'post/main_base.html' %}
+
+{% block title %}
+    manager
+{% endblock %}
+
+{% block aside %}
+    <aside id="sidebar" class="sidebar">
+
+        <ul class="sidebar-nav" id="sidebar-nav">
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'post:manager-dashboard' %}">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'post:manager-dashboard' %}?pages=add_counter">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <span>Add Counter</span>
+                </a>
+            </li><!-- End Login Page Nav -->
+
+        </ul>
+
+    </aside>
+{% endblock %}
+
+{% block middle_breadcrumb %}
+    manager
+{% endblock %}
+
+{% block active_breadcrumb %}
+    {% if page == None %}
+        dashboard
+    {% elif page == "update_user" %}
+        update account
+    {% elif page == 'profile' %}
+        profile
+    {% elif page == 'new_client' %}
+        add counter
+    {% endif %}
+{% endblock %}
+
+{% block middle %}
+    {% load static %}
+    {% if page == "new_client" %}
+        <div class="row justify-content-center">
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="pt-4 pb-2">
+                            <h5 class="card-title text-center pb-0 fs-4">Add a Counter</h5>
+                            <p class="text-center small">Enter your personal details to create account</p>
+                        </div>
+                        <form method="post" action="{% url 'account:register' new_user_role %}" class="row g-3 needs-validation" novalidate>
+                            {% csrf_token %}
+                            {% for form in rf_form %}
+                                <div class="col-12">
+                                    <label for="{{ form.id_for_label }}" class="form-label">{{ form.label }}</label>
+                                    {{ form }}
+                                    <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
+                                </div>
+                            {% endfor %}
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="terms" type="checkbox" checked
+                                           id="acceptTerms" required>
+                                    <label class="form-check-label" for="acceptTerms">I agree and accept the <a
+                                            href="#">terms and conditions</a></label>
+                                    <div class="invalid-feedback">You must agree before submitting.</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100" type="submit">Create Account</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif page == "update_user" %}
+        <div class="pt-3 w-50 m-auto">
+            <h3 class="card-header text-center font-monospace">Update User Account</h3>
+            <form method="post" class="mt-4" id="usr_update_form">
+                {% csrf_token %}
+                {% for form in update_form %}
+                    {% if forloop.counter0 == 4 %}
+                        <div class="row mb-3">
+                            <div class="col-md-8 col-lg-9">
+                                <input type="password" id="id_password" name="password" class="form-control"
+                                       value="{{ update_form_user.password }}">
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="row mb-3">
+                            <label for="{{ form.id_for_label }}"
+                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                            <div class="col-md-8 col-lg-9">
+                                {{ form }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
+                <div class="text-center">
+                    <button name="update_s_user" type="submit" class="btn btn-primary">Save Changes
+                    </button>
+                </div>
+            </form>
+            <script>
+                let ar = document.getElementById('usr_update_form')
+
+                let link = window.location.search
+                let obj = {}
+                let key = ''
+                let value = ''
+                let turnk = true
+                for (let i = 1; i < link.length; i++) {
+                    if (link[i] === "=") {
+                        turnk = false
+                        continue
+                    } else if (link[i] === "&") {
+                        obj[key] = value
+                        key = ""
+                        value = ""
+                        turnk = true
+                        continue
+                    }
+                    if (turnk)
+                        key += link[i]
+                    else
+                        value += link[i]
+                }
+                obj[key] = value
+                console.log(obj)
+                console.log(obj.id)
+                ar.setAttribute('action', `{% url 'account:update_account' %}?id=${obj.id}`)
+                let pass = document.getElementById('id_password')
+                pass.removeAttribute('required')
+                pass.setAttribute('type', 'hidden')
+            </script>
+        </div>
+    {% elif page == 'profile' %}
+        <div class="row">
+            <div class="col-xl-4">
+
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+                        <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+                        <h2>{{ user.first_name|title }} {{ user.middle_name|title }}</h2>
+                        <h3>Manager</h3>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-xl-8">
+
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
+                                    Overview
+                                </button>
+                            </li>
+
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit"  onclick="blur_password()">Edit
+                                    Profile
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">
+                                    Change Password
+                                </button>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content pt-2">
+
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+
+                                <h5 class="card-title">Profile Details</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.first_name|title }} {{ user.middle_name|title }} {{ user.last_name|title }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Company</div>
+                                    <div class="col-lg-9 col-md-8">Ethiopian Post Service</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Job</div>
+                                    <div class="col-lg-9 col-md-8">Manager</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Sex</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.sex }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.address }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.phone }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ user.email }}</div>
+                                </div>
+
+                            </div>
+
+                            <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+
+                                <form method="post" action="{% url 'account:update_account' %}">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
+                                            Image</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile">
+                                            <div class="pt-2">
+                                                <a href="#" class="btn btn-primary btn-sm"
+                                                   title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                   title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    {% for form in update_form %}
+
+                                        {% if forloop.counter0 == 4 %}
+                                            <div class="row mb-3">
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="text" id="id_password" name="password"
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="row mb-3">
+                                                <label for="{{ form.id_for_label }}"
+                                                       class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    {{ form }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                    <div class="text-center">
+                                        <button name="update" type="submit" class="btn btn-primary">Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <script>
+                                function blur_password() {
+                                    let pass = document.getElementById('id_password')
+                                    pass.removeAttribute('required')
+                                    pass.setAttribute('type', 'hidden')
+                                    pass.value = "{{user.password}}"
+                                }
+                            </script>
+                            <div class="tab-pane fade pt-3" id="profile-change-password">
+                                <form method="post" action="{% url 'account:update_password' user.id %}">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="current_password" type="password" class="form-control"
+                                                   id="currentPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="new_password" type="password" class="form-control"
+                                                   id="newPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label for="renew_password" class="col-md-4 col-lg-3 col-form-label">Re-enter
+                                            New
+                                            Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="renew_password" type="password" class="form-control"
+                                                   id="renewPassword" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" name="password_update" class="btn btn-primary">Change
+                                            Password
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="our-custom-model card m-auto d-none">
+            <div class="modal-header">
+                <h5 class="modal-title font-monospace ">Are you sure you want to delete the selected user?</h5>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="iamsure" class="btn btn-danger">Yes, I’m sure</a>
+                <a href="#" onclick="rm()" id="notsure" class="btn btn-secondary">No, take me back</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">List of counters.</h5>
+                        <table class="table datatable">
+                            <thead>
+                            <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">Full name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Sex</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for counter in counters %}
+                                <tr>
+                                    <td>{{ counter.id }}</td>
+                                    <td>{{ counter.first_name }} {{ counter.middle_name }}</td>
+                                    <td>{{ counter.email }}</td>
+                                    <td>{{ counter.get_sex_display }}</td>
+                                    <td>{{ counter.address }}</td>
+                                    <td>{{ counter.phone }}</td>
+                                    <td><a href="{% url 'post:manager-dashboard' %}?pages=update_user&id={{ counter.id }}"
+                                           class="btn btn-sm btn-primary">Update</a></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="dume(this)"
+                                                value="{{ counter.id }}">Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <script>
+                    function rm() {
+                        let ds = document.getElementsByClassName('our-custom-model')[0]
+                        ds.classList.add('d-none')
+                    }
+
+                    function dume(btn) {
+                        let ds = document.getElementsByClassName('our-custom-model')[0]
+                        let a_sure = document.getElementById('iamsure')
+
+                        a_sure.setAttribute('href', '/account/delete/' + btn.value + '/')
+
+                        ds.classList.toggle('d-none')
+                    }
+                </script>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

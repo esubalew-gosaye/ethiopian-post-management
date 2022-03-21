@@ -18,7 +18,7 @@
 
             <li class="nav-item">
                 <a class="nav-link collapsed" href="{% url 'post:user-dashboard' %}?pages=write_feedback">
-                    <i class="bi bi-bookmark-heart"></i>
+                    <i class="bi bi-pencil-square"></i>
                     <span>Write Feedback</span>
                 </a>
             </li><!-- End Register Page Nav -->
@@ -28,8 +28,13 @@
                     <i class="bi bi-geo-alt-fill"></i>
                     <span>Track Post</span>
                 </a>
-            </li><!-- End Login Page Nav -->
-
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'post:user-dashboard' %}?pages=my_comment">
+                    <i class="bi bi-list"></i>
+                    <span>Your Comment</span>
+                </a>
+            </li>
         </ul>
 
     </aside>
@@ -48,6 +53,8 @@
         tack
     {% elif page == 'profile' %}
         profile
+    {% elif page == 'my_comment' %}
+        comment list
     {% endif %}
 {% endblock %}
 
@@ -89,6 +96,34 @@
                 </div>
             </div>
         </div>
+    {% elif page == 'my_comment' %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">List of Your Feedback.</h5>
+                        <ul class="list-group list-group-flush">
+                            {% for feedback in feedbacks %}
+                                <div class="row mt-2">
+                                    <div class="col-md-8">
+                                        <li class="list-group-item">
+                                            <div>{{ feedback.subject }},<br></div>
+                                            {{ feedback.body }}
+                                        </li>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="{% url 'post:user-dashboard' %}?pages=delete_comment&id={{ feedback.id }}"
+                                           class="btn btn-outline-danger ">Delete</a>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="header pt-3">You are no commented yet.</div>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% elif page == 'post_track' %}
         <div class="row contact justify-content-center">
             <div class="col-xl-5 col-md-5">
@@ -99,7 +134,8 @@
                         {% csrf_token %}
                         <div class="row gy-4">
                             <div class="col-md-6">
-                                <input type="text" name="track_id" class="form-control" placeholder="Your track id" required>
+                                <input type="text" name="track_id" class="form-control" placeholder="Your track id"
+                                       required>
                             </div>
                             <div class="col-md-6">
                                 <button type="submit" name="track" class="btn btn-success">Track</button>
@@ -121,15 +157,9 @@
 
                         <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
                         <h2>{{ user.first_name|title }} {{ user.middle_name|title }}</h2>
-                        <h3>{% if user.is_costumer == True %}
+                        <h3>
                             Costumer
-                        {% elif user.is_admin == True %}
-                            Admin
-                        {% elif user.is_postman == True %}
-                            Post Man
-                        {% elif user.is_counter == True %}
-                            Counter
-                        {% endif %} </h3>
+                        </h3>
                     </div>
                 </div>
 
@@ -148,7 +178,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit"
+                                        onclick="blur_password()">Edit
                                     Profile
                                 </button>
                             </li>
@@ -177,15 +208,9 @@
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Job</div>
-                                    <div class="col-lg-9 col-md-8">{% if user.is_costumer == True %}
+                                    <div class="col-lg-9 col-md-8">
                                         Costumer
-                                    {% elif user.is_admin == True %}
-                                        Admin
-                                    {% elif user.is_postman == True %}
-                                        Post Man
-                                    {% elif user.is_counter == True %}
-                                        Counter
-                                    {% endif %} </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -213,7 +238,7 @@
                             <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
 
-                                <form method="post" action="">
+                                <form method="post" action="{% url 'account:update_account' %}">
                                     {% csrf_token %}
                                     <div class="row mb-3">
                                         <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
@@ -229,23 +254,23 @@
                                         </div>
                                     </div>
 
-
-                                    <div class="col-12">
-                                        <label for="" class="form-label">{{ form.label }}</label>
-                                        {{ form }}
-                                        <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
-                                    </div>
-
                                     {% for form in update_form %}
-
-                                        <div class="row mb-3">
-                                            <label for="{{ form.id_for_label }}"
-                                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                {{ form }}
+                                        {% if forloop.counter0 == 4 %}
+                                            <div class="row mb-3">
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="text" id="id_password" name="password"
+                                                           class="form-control">
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        {% else %}
+                                            <div class="row mb-3">
+                                                <label for="{{ form.id_for_label }}"
+                                                       class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    {{ form }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
                                     {% endfor %}
 
                                     <div class="text-center">
@@ -254,7 +279,14 @@
                                     </div>
                                 </form>
                             </div>
-
+                            <script>
+                                function blur_password() {
+                                    let pass = document.getElementById('id_password')
+                                    pass.removeAttribute('required')
+                                    pass.setAttribute('type', 'hidden')
+                                    pass.value = "{{ user.password }}"
+                                }
+                            </script>
                             <div class="tab-pane fade pt-3" id="profile-change-password">
                                 <form method="post" action="{% url 'account:update_password' user.id %}">
                                     {% csrf_token %}
@@ -302,7 +334,7 @@
 
             </div>
         </div>
-    {% else%}
+    {% else %}
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -345,7 +377,7 @@
                                         <td>{{ post.rec_phone }}</td>
                                         <td>{{ post.rec_address }}</td>
                                     {% endif %}
-                                     <td class="bg-info">Sent</td>
+                                    <td class="bg-info">Sent</td>
                                 </tr>
                             {% endfor %}
                             {% for post in post_list.1 %}
@@ -370,7 +402,7 @@
                                         <td>{{ post.rec_phone }}</td>
                                         <td>{{ post.rec_address }}</td>
                                     {% endif %}
-                                     <td class="bg-success">Received</td>
+                                    <td class="bg-success">Received</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

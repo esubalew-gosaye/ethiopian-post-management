@@ -9,5 +9,6 @@ urlpatterns = [
     path("user/", user_dashboard, name="user-dashboard"),
     path("counter/", counter_dashboard, name="counter-dashboard"),
     path("postman/", postman_dashboard, name="postman-dashboard"),
+    path("manager/", manager_dashboard, name="manager-dashboard"),
     path("seen/<str:pk>/", all_to_seen, name="all-or-one-to-seen")
 ]

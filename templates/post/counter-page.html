@@ -181,15 +181,9 @@
 
                         <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
                         <h2>{{ user.first_name|title }} {{ user.middle_name|title }}</h2>
-                        <h3>{% if user.is_costumer == True %}
-                            Costumer
-                        {% elif user.is_admin == True %}
-                            Admin
-                        {% elif user.is_postman == True %}
-                            Post Man
-                        {% elif user.is_counter == True %}
+                        <h3>
                             Counter
-                        {% endif %} </h3>
+                        </h3>
                     </div>
                 </div>
 
@@ -208,7 +202,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit"  onclick="blur_password()">Edit
                                     Profile
                                 </button>
                             </li>
@@ -237,15 +231,9 @@
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Job</div>
-                                    <div class="col-lg-9 col-md-8">{% if user.is_costumer == True %}
-                                        Costumer
-                                    {% elif user.is_admin == True %}
-                                        Admin
-                                    {% elif user.is_postman == True %}
-                                        Post Man
-                                    {% elif user.is_counter == True %}
+                                    <div class="col-lg-9 col-md-8">
                                         Counter
-                                    {% endif %} </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -273,7 +261,7 @@
                             <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
 
-                                <form method="post" action="">
+                                <form method="post" action="{% url 'account:update_account' %}">
                                     {% csrf_token %}
                                     <div class="row mb-3">
                                         <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
@@ -290,21 +278,24 @@
                                     </div>
 
 
-                                    <div class="col-12">
-                                        <label for="" class="form-label">{{ form.label }}</label>
-                                        {{ form }}
-                                        <div class="invalid-feedback">Please, enter your {{ form.label }}!</div>
-                                    </div>
-
                                     {% for form in update_form %}
 
-                                        <div class="row mb-3">
-                                            <label for="{{ form.id_for_label }}"
-                                                   class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
-                                            <div class="col-md-8 col-lg-9">
-                                                {{ form }}
+                                        {% if forloop.counter0 == 4 %}
+                                            <div class="row mb-3">
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="text" id="id_password" name="password"
+                                                           class="form-control">
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% else %}
+                                            <div class="row mb-3">
+                                                <label for="{{ form.id_for_label }}"
+                                                       class="col-md-4 col-lg-3 col-form-label">{{ form.label }}</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    {{ form }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
 
                                     {% endfor %}
 
@@ -314,7 +305,14 @@
                                     </div>
                                 </form>
                             </div>
-
+                            <script>
+                                function blur_password() {
+                                    let pass = document.getElementById('id_password')
+                                    pass.removeAttribute('required')
+                                    pass.setAttribute('type', 'hidden')
+                                    pass.value = "{{user.password}}"
+                                }
+                            </script>
                             <div class="tab-pane fade pt-3" id="profile-change-password">
                                 <form method="post" action="{% url 'account:update_password' user.id %}">
                                     {% csrf_token %}
